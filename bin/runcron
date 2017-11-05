@@ -1,0 +1,8 @@
+#! /bin/bash
+
+# Grab container env variables
+/usr/bin/env | sed 's/^\(.*\)$/export \1/g' > /root/envs.sh
+chmod +x /root/envs.sh
+
+# Run cron
+/usr/sbin/cron -f
