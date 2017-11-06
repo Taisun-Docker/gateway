@@ -1,4 +1,4 @@
 #! /bin/bash
 
 # Ping the dynamic dns endpoint to update
-curl --insecure https://freedns.afraid.org/dynamic/update.php?$DNSKEY
+curl --insecure https://api.taisun.io/production/dyndns?key=$DNSKEY
