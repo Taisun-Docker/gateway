@@ -14,7 +14,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y openvpn 
   dpkg -i squid3.deb && rm -f squid3.deb && \
   curl --insecure https://dl.eff.org/certbot-auto -o /usr/local/bin/certbot-auto && \
   chmod +x /usr/local/bin/certbot-auto && \
-  /usr/local/bin/certbot-auto && \
+  /usr/local/bin/certbot-auto --noninteractive && \
   apt-get clean && \ 
   rm -rf /var/lib/apt/lists/*
 
