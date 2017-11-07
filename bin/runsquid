@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # If the SSL certificates have been generated start squid otherwise just run cat
-if [ -e /etc/ssl/taisun.crt ] && [ -e /etc/ssl/taisun.key ] && [ -n "${SQUIDPASS+set}" ] && [ -n "${SQUIDUSER+set}" ]; then
+if [ -e /etc/letsencrypt/taisun.crt ] && [ -e /etc/letsencrypt/taisun.key ] && [ -n "${SQUIDPASS+set}" ] && [ -n "${SQUIDUSER+set}" ]; then
   # Generate basic auth file from env variables
   /usr/bin/htpasswd -b -c /etc/squid3/passwords "$SQUIDUSER" "$SQUIDPASS"
   # Generate cache if needed

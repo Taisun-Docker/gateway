@@ -7,5 +7,7 @@ copy_certs () {
 
 copy_certs
 wait
+# Make sure we kill off squid
+kill -9 $(pgrep squid3)
 /usr/bin/supervisorctl restart squid
 exit 0
