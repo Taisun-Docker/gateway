@@ -2,3 +2,4 @@ SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 * * * * * root . /root/envs.sh;/usr/local/bin/dynupdate
+0 1 * * * root . /root/envs.sh;/usr/local/bin/certbot

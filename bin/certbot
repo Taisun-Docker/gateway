@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Check if env vars are set
+if [ -z ${EMAIL+x} ]; then echo "Fatal: administrator email address must be specified with the environment variable named 'EMAIL'"; exit 1; fi
+if [ -z ${SERVERIP+x} ]; then echo "Fatal: domain must be specified with the environment variable named 'SERVERIP'"; exit 1; fi
+# If domain directory exists just renew the cert
+if [ -d "/etc/letsencrypt/live/${SERVERIP}" ]; then
+  /usr/local/bin/certbot-auto renew --verbose --noninteractive --standalone --preferred-challenges http-01 --agree-tos --renew-hook /usr/local/bin/restartsquid
+  echo "Renewed cert for ${SERVERIP}"
+  exit 0
+fi
+
+# Issuing a new certificate
+/usr/local/bin/certbot-auto certonly --verbose --noninteractive --standalone --preferred-challenges http-01 --agree-tos --post-hook /usr/local/bin/restartsquid --email="${EMAIL}" -d "${SERVERIP}"
+/usr/bin/supervisorctl restart squid
+exit 0

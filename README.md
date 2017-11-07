@@ -15,6 +15,7 @@ docker run --name openvpn -d \
 -e SQUIDUSER=<WEBPROXYUSER> \
 -e SQUIDPASS=<WEBPROXYPASSWORD> \
 -e DNSKEY=<DNSKEYFORDYNDNS> \
+-e EMAIL=<YOUREMAIL> \
 -p 1194:1194/udp \
 -p 4443:443 \
 --cap-add=NET_ADMIN gateway
