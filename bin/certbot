@@ -12,5 +12,4 @@ fi
 
 # Issuing a new certificate
 /usr/local/bin/certbot-auto certonly --verbose --noninteractive --standalone --preferred-challenges http-01 --agree-tos --post-hook /usr/local/bin/restartsquid --email="${EMAIL}" -d "${SERVERIP}"
-/usr/bin/supervisorctl restart squid
 exit 0
