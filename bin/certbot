@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Get system env variables
+source /root/envs.sh
+
 # Check if env vars are set
 if [ -z ${EMAIL+x} ]; then echo "Fatal: administrator email address must be specified with the environment variable named 'EMAIL'"; exit 1; fi
 if [ -z ${SERVERIP+x} ]; then echo "Fatal: domain must be specified with the environment variable named 'SERVERIP'"; exit 1; fi

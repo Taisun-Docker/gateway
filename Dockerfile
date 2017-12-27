@@ -35,5 +35,6 @@ RUN chmod a+x /usr/local/bin/*
 COPY ./supervisor.conf /etc/supervisor/conf.d/supervisor.conf
 COPY ./squid.conf /etc/squid3/squid.conf
 COPY ./crontab /etc/crontab
+RUN /usr/bin/crontab /etc/crontab
 
 CMD ["/usr/bin/supervisord"]
