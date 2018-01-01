@@ -1,7 +1,0 @@
-#! /bin/bash
-
-# Get system env variables
-source /root/envs.sh
-
-# Ping the dynamic dns endpoint to update
-curl --insecure https://api.taisun.io/production/dyndns?key=$DNSKEY

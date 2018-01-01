@@ -2,21 +2,6 @@
 
 http://taisun.io
 
-### QuickStart
+This is a helper container that runs on a public port and allows a user to access their Taisun stacks remotely. More documenation here: 
 
-On a Docker enabled host run the following command from cli:
-```
-docker volume create openvpn
-docker volume create ssl
-docker run --name openvpn -d \
--v openvpn:/etc/openvpn \
--v ssl:/etc/ssl \
--e SERVERIP=<YOURSERVERDNSADDRESS> \
--e SQUIDUSER=<WEBPROXYUSER> \
--e SQUIDPASS=<WEBPROXYPASSWORD> \
--e DNSKEY=<DNSKEYFORDYNDNS> \
--e EMAIL=<YOUREMAIL> \
--p 1194:1194/udp \
--p 4443:443 \
---cap-add=NET_ADMIN gateway
-```
+https://gitlab.com/thelamer/taisun/wikis/Usage/Gateway

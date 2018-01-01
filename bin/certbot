@@ -1,18 +1,59 @@
 #!/usr/bin/env bash
 
-# Get system env variables
-source /root/envs.sh
+# Generate self signed cert
+function selfsign {
+  if [ -f /etc/letsencrypt/self.crt ]; then
+    echo "Self signed cert exists not regenerating"
+    sleep 86400
+    main
+  else
+    openssl req -new \
+    -newkey rsa:2048 \
+    -nodes \
+    -x509 \
+    -keyout /etc/letsencrypt/self.key \
+    -out /etc/letsencrypt/self.csr \ &&
+    openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out server.crt
+    -days 3650 \
+    -out /etc/letsencrypt/self.crt \
+    -subj "/C=US/ST=Somewhere/L=Else/O=Taisun/OU=Self/CN=${SERVERIP}"
+    wait
+    /usr/bin/supervisorctl restart taisun-gateway
+    sleep 86400
+    main
+  fi
+}
 
-# Check if env vars are set
-if [ -z ${EMAIL+x} ]; then echo "Fatal: administrator email address must be specified with the environment variable named 'EMAIL'"; exit 1; fi
-if [ -z ${SERVERIP+x} ]; then echo "Fatal: domain must be specified with the environment variable named 'SERVERIP'"; exit 1; fi
-# If domain directory exists just renew the cert
-if [ -d "/etc/letsencrypt/live/${SERVERIP}" ]; then
-  /usr/local/bin/certbot-auto renew --verbose --noninteractive --standalone --preferred-challenges http-01 --agree-tos --renew-hook /usr/local/bin/restartsquid
-  echo "Renewed cert for ${SERVERIP}"
-  exit 0
-fi
+# Main logic callback for daily sleeps to check cert status
+function main {
+  # Check if env vars are set
+  if [ -z ${EMAIL+x} ]; then echo "Fatal: administrator email address must be specified with the environment variable named 'EMAIL'"; exit 1; fi
+  if [ -z ${SERVERIP+x} ]; then echo "Fatal: domain must be specified with the environment variable named 'SERVERIP'"; exit 1; fi
+  # If domain directory exists just renew the cert
+  if [ -d "/etc/letsencrypt/live/${SERVERIP}" ]; then
+    /usr/local/bin/certbot-auto renew --verbose --noninteractive --standalone --preferred-challenges http-01 --agree-tos
+    rc=$?
+    if [[ $rc != 0 ]]; then
+      selfsign
+    else
+      echo "Renewed cert for ${SERVERIP}"
+      /usr/bin/supervisorctl restart taisun-gateway
+      sleep 86400
+      main
+    fi
+  fi
+  # Attempt a new certificate
+  /usr/local/bin/certbot-auto certonly --verbose --noninteractive --standalone --preferred-challenges http-01 --agree-tos --email="${EMAIL}" -d "${SERVERIP}"
+  rc=$?
+  if [[ $rc != 0 ]]; then
+    selfsign
+  else
+    /usr/bin/supervisorctl restart taisun-gateway
+    sleep 86400
+    main
+  fi
+}
 
-# Issuing a new certificate
-/usr/local/bin/certbot-auto certonly --verbose --noninteractive --standalone --preferred-challenges http-01 --agree-tos --post-hook /usr/local/bin/restartsquid --email="${EMAIL}" -d "${SERVERIP}"
-exit 0
+
+# Run main logic
+main
