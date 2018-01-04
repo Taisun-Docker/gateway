@@ -32,4 +32,11 @@ $( document ).ready(function() {
     }
   }
   });
+  // Add Taisun link
+  $('#taisun').append('\
+    <div class="mx-auto" style="width:140px;cursor:pointer;" onclick="window.location=\'/87bdc7b8-a9f2-4857-a94a-9dffe4cec434?port=' + taisunport + '\';">\
+      <center><img src="/3f4349dd-54f9-46ab-bab4-33c6fad6a995/img/taisun.png">\
+      <h4 class="card-title">Taisun</h4></center>\
+    </div>\
+  ');
 });
