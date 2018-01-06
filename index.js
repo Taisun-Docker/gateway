@@ -12,7 +12,7 @@ var pass = process.env.DNSKEY;
 var lecertpath = '/etc/letsencrypt/live/' + process.env.SERVERIP + '/fullchain.pem';
 var lekeypath = '/etc/letsencrypt/live/' + process.env.SERVERIP + '/privkey.pem';
 var selfcertpath = '/etc/letsencrypt/self.crt';
-var selfkeypath = '/etc/letsencrypt/selfkey.pem';
+var selfkeypath = '/etc/letsencrypt/self.key';
 if (fs.existsSync(lecertpath)){
   var privateKey = fs.readFileSync(lekeypath).toString();
   var certificate = fs.readFileSync(lecertpath).toString();

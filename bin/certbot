@@ -7,16 +7,16 @@ function selfsign {
     sleep 86400
     main
   else
-    openssl req -new \
-    -newkey rsa:2048 \
-    -nodes \
-    -x509 \
-    -keyout /etc/letsencrypt/self.key \
-    -out /etc/letsencrypt/self.csr \ &&
-    openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out server.crt
+    openssl genrsa -out /etc/letsencrypt/self.key 2048 && \
+    openssl req -new -sha256 \
+    -subj "/C=US/ST=Somewhere/L=Else/O=Taisun/OU=Self/CN=${SERVERIP}" \
+    -key /etc/letsencrypt/self.key \
+    -out /etc/letsencrypt/self.csr && \
+    openssl x509 -req \
     -days 3650 \
-    -out /etc/letsencrypt/self.crt \
-    -subj "/C=US/ST=Somewhere/L=Else/O=Taisun/OU=Self/CN=${SERVERIP}"
+    -in /etc/letsencrypt/self.csr \
+    -signkey /etc/letsencrypt/self.key \
+    -out /etc/letsencrypt/self.crt
     wait
     /usr/bin/supervisorctl restart taisun-gateway
     sleep 86400
