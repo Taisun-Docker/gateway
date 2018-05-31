@@ -11,46 +11,19 @@ var taisunport = process.env.TAISUNPORT;
 var pass = process.env.DNSKEY;
 var lecertpath = '/etc/letsencrypt/live/' + process.env.SERVERIP + '/fullchain.pem';
 var lekeypath = '/etc/letsencrypt/live/' + process.env.SERVERIP + '/privkey.pem';
-var selfcertpath = '/etc/letsencrypt/self.crt';
-var selfkeypath = '/etc/letsencrypt/self.key';
-if (fs.existsSync(lecertpath)){
-  var privateKey = fs.readFileSync(lekeypath).toString();
-  var certificate = fs.readFileSync(lecertpath).toString();
-}
-else{
-  var privateKey = fs.readFileSync(selfkeypath).toString();
-  var certificate = fs.readFileSync(selfcertpath).toString(); 
-}
-// Global var for port setting
-port = null;
-// Guid pathnames used for the interface and proxy setting
-var dashboard = '3f4349dd-54f9-46ab-bab4-33c6fad6a995';
-var switcher = '87bdc7b8-a9f2-4857-a94a-9dffe4cec434';
+var privateKey = fs.readFileSync(lekeypath).toString();
+var certificate = fs.readFileSync(lecertpath).toString();
 
 // Proxy server
 var proxyServer = https.createServer({key: privateKey,cert: certificate}, function (req, res) {
+  var subdomain = req.headers.host.split('.')[0];
   // Check for auth
   if (auth(req) == true){
     var parsed = url.parse(req.url,true);
-    // If this is a request for changing the port of the proxy execute
-    if (parsed.pathname.split('/')[1] == switcher){
-      port = url.parse(req.url,true).query.port;
-      if (parsed.query.path){
-        res.writeHead(302, {
-          'Location': '/' + parsed.query.path
-        });
-      }
-      else {
-        res.writeHead(302, {
-          'Location': '/'
-        });
-      }
-      res.end();
-    }
-    else if (parsed.pathname.split('/')[1] == dashboard){
+    if (subdomain == 'taisun-gateway'){
       var safeSuffix = parsed.pathname.replace(/^(\.\.[\/\\])+/, '');
-      if (safeSuffix == '/' + dashboard || safeSuffix == '/' + dashboard + '/'){
-        var safeSuffix = '/' + dashboard + '/index.html';
+      if (safeSuffix == '/' ){
+        var safeSuffix = '/public/index.html';
       }
       var fileLoc = path.join(__dirname, safeSuffix);
       var filename = parsed.pathname.substring(parsed.pathname.lastIndexOf('/')+1);
@@ -72,7 +45,7 @@ var proxyServer = https.createServer({key: privateKey,cert: certificate}, functi
               body += chunk;
             });
             taisunres.on('end', function() {
-              var templated = data.toString('utf8').replace('%%%CONTAINERS%%%',body).replace('%%%TAISUNPORT%%%',taisunport);
+              var templated = data.toString('utf8').replace('%%%CONTAINERS%%%',body).replace('%%%TAISUNPORT%%%',taisunport).replace('%%%TAISUNAUTH%%%',pass);
               res.statusCode = 200;
               res.write(templated);
               return res.end();
@@ -91,14 +64,12 @@ var proxyServer = https.createServer({key: privateKey,cert: certificate}, functi
       });
     }
     else{
-      // Make sure the port setting is a number
-      if(isNaN(parseFloat(port)) || parseInt(port) <= 0 || parseInt(port) >= 65536){
-        res.end('port not set');
-      }
-      else{
-        var endpoint = 'http://' + ip + ':' + port;
-        proxy.web(req, res, {target: endpoint});
-      }
+      var endpoint = 'http://' + ip + ':' + subdomain;
+      proxy.web(req, res, {target: endpoint}, function(e) {
+        res.statusCode = 200;
+        res.write(JSON.stringify(e));
+        return res.end();
+      });
     }
   }
   else{
@@ -112,13 +83,16 @@ var proxyServer = https.createServer({key: privateKey,cert: certificate}, functi
 proxyServer.on('upgrade', function (req, socket) {
   // Check for auth
   if (auth(req) == true){
+    var subdomain = req.headers.host.split('.')[0];
     // make sure port is ok
-    if(isNaN(parseFloat(port)) || parseInt(port) <= 0 || parseInt(port) >= 65536){
-      res.end('port not set');
+    if(isNaN(parseFloat(subdomain)) || parseInt(subdomain) <= 0 || parseInt(subdomain) >= 65536){
+      res.end('Not a valid SubDomain');
     }
     else{
-      var endpoint = 'http://' + ip + ':' + port;
-      proxy.ws(req, socket, {target: endpoint});
+      var endpoint = 'http://' + ip + ':' + subdomain;
+      proxy.ws(req, socket, {target: endpoint}, function(e) {
+        console.log(JSON.stringify(e));
+      });
     }
   }
   else{

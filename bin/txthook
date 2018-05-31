@@ -1,0 +1,7 @@
+#! /bin/bash
+
+# Hit the Taisun TXT update endpoint with the txt record from certbot
+curl --silent https://api.taisun.io/txtupdate?key=${DNSKEY}\&txt=${CERTBOT_VALIDATION} > /dev/null
+
+# Sleep to ensure deployment
+sleep 120

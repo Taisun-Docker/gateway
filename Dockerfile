@@ -23,8 +23,7 @@ COPY . /usr/src/Taisun-gateway
 WORKDIR /usr/src/Taisun-gateway
 RUN npm install
 
-#Certbot runs on port 80 app on 3000
-EXPOSE 80
+# App runs on 3000
 EXPOSE 3000
 
 #Copy over supervisor config file
