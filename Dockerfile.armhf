@@ -1,9 +1,10 @@
 # Dockerfile for the taisun web proxy gateway
 # 2017
 # From node base image
-FROM node:8.9
-
+FROM node@sha256:7d8d1965006c26ba7661f1c1f32d7f16705b2c01b900c3000dc7ed0f8ffa0e17
 LABEL maintainer="Ryan Kuba <ryankuba@gmail.com>"
+# Add qemu to build on x86_64 systems
+COPY qemu-arm-static /usr/bin
 
 # Get Packages and easyrsa
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl supervisor apache2-utils && \
@@ -21,7 +22,10 @@ RUN chmod a+x /usr/local/bin/*
 RUN mkdir -p /usr/src/Taisun-gateway
 COPY . /usr/src/Taisun-gateway
 WORKDIR /usr/src/Taisun-gateway
-RUN npm install
+RUN npm config set unsafe-perm true && \
+  npm i npm@latest -g && \
+  npm install
+
 
 # App runs on 3000
 EXPOSE 3000

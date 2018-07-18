@@ -4,4 +4,4 @@ http://taisun.io
 
 This is a helper container that runs on a public port and allows a user to access their Taisun stacks remotely. More documenation here: 
 
-https://gitlab.com/thelamer/taisun/wikis/Usage/Gateway
+https://github.com/Taisun-Docker/taisun/wiki/Gateway
