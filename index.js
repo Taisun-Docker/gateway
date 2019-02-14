@@ -9,6 +9,9 @@ var proxy = httpProxy.createProxyServer();
 var ip = process.env.TAISUNIP;
 var taisunport = process.env.TAISUNPORT;
 var pass = process.env.DNSKEY;
+if(process.env.CUSTOMPASS) { 
+  var pass = process.env.CUSTOMPASS;
+}
 var lecertpath = '/etc/letsencrypt/live/' + process.env.SERVERIP + '/fullchain.pem';
 var lekeypath = '/etc/letsencrypt/live/' + process.env.SERVERIP + '/privkey.pem';
 var privateKey = fs.readFileSync(lekeypath).toString();
