@@ -25,6 +25,15 @@ $( document ).ready(function() {
         </div>\
       ');
     }
+    else if (labels.stacktype && container.State == 'running' && labels.stacktype == 'terminal'){
+      var linkurl = window.location.href.replace('taisun-gateway', 'user:' + pass + '@' + taisunport) + '/terminal/' + container.Id;
+      $('#term').append('\
+        <div class="mx-auto" style="width:140px;cursor:pointer;" onclick="window.open(\'' + linkurl + '\',\'_blank\');">\
+          <center><img src="/public/img/terminal.png">\
+          <h4 class="card-title">'+ labels.stackname + '</h4></center>\
+        </div>\
+      ');
+    }
     else if (labels.devport && container.State == 'running'){
       var linkurl = window.location.href.replace('taisun-gateway', 'user:' + pass + '@' + labels.devport);
       $('#dev').append('\
