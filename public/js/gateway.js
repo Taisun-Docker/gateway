@@ -7,14 +7,31 @@ $( document ).ready(function() {
   var labels = container.Labels;
   if (labels.stacktype){
     if (labels.appport && container.State == 'running'){
-      var iconurl = labels.stackurl.replace('.yml','.png').replace('/templates/','/icons/');
-      var linkurl = window.location.href.replace('taisun-gateway', 'user:' + pass + '@' + labels.appport);
-      $('#stacks').append('\
-        <div class="mx-auto" style="width:140px;cursor:pointer;" onclick="window.open(\'' + linkurl + '\',\'_blank\');">\
-          <center><img src="' + iconurl + '">\
-          <h4 class="card-title">'+ labels.stackname + '</h4></center>\
-        </div>\
-      ');
+      var apport = labels.appport;
+      if (isNaN(apport)){
+        var dropdownlinks = '';
+        var ports = JSON.parse(apport);
+        $(ports).each(function( key, value ){
+          var iconurl = labels.stackurl.replace('.yml','.png').replace('/templates/','/icons/');
+          var linkurl = window.location.href.replace('taisun-gateway', 'user:' + pass + '@' + value[Object.keys(value)[0]]);
+          $('#stacks').append('\
+            <div class="mx-auto" style="width:140px;cursor:pointer;" onclick="window.open(\'' + linkurl + '\',\'_blank\');">\
+              <center><img src="' + iconurl + '">\
+              <h4 class="card-title">'+ Object.keys(value)[0] + '</h4></center>\
+            </div>\
+        ');
+        });
+      }
+      else{
+        var iconurl = labels.stackurl.replace('.yml','.png').replace('/templates/','/icons/');
+        var linkurl = window.location.href.replace('taisun-gateway', 'user:' + pass + '@' + labels.appport);
+        $('#stacks').append('\
+          <div class="mx-auto" style="width:140px;cursor:pointer;" onclick="window.open(\'' + linkurl + '\',\'_blank\');">\
+            <center><img src="' + iconurl + '">\
+            <h4 class="card-title">'+ labels.stackname + '</h4></center>\
+          </div>\
+        ');
+      }
     }
     else if (labels.devport && container.State == 'running' && labels.ide == 'VDI'){
       var linkurl = window.location.href.replace('taisun-gateway', 'user:' + pass + '@' + taisunport) + '/desktop/' + container.Id;
