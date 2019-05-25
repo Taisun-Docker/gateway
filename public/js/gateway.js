@@ -69,6 +69,15 @@ $( document ).ready(function() {
         </div>\
       ');
     }
+    else if (labels.stacktype == 'rdpvnc' && container.State == 'running'){
+      var linkurl = window.location.href.replace('taisun-gateway', 'user:' + pass + '@' + taisunport) + '/' + labels.remote_type + '/' + container.Id;
+      $('#vdi').append('\
+        <div class="mx-auto" style="width:140px;cursor:pointer;" onclick="window.open(\'' + linkurl + '\',\'_blank\');">\
+          <center><img src="/public/img/monitor.png">\
+          <h4 class="card-title">'+ labels.stackname + '</h4></center>\
+        </div>\
+      ');
+    }
   }
   });
   // Add Taisun link
