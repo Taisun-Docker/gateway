@@ -100,7 +100,7 @@ proxyServer.on('upgrade', function (req, socket) {
     var subdomain = req.headers.host.split('.')[0];
     // make sure port is ok
     if(isNaN(parseFloat(subdomain)) || parseInt(subdomain) <= 0 || parseInt(subdomain) >= 65536){
-      res.end('Not a valid SubDomain');
+      socket.end('Not a valid SubDomain');
     }
     else{
       var endpoint = 'http://' + ip + ':' + subdomain;
@@ -110,9 +110,9 @@ proxyServer.on('upgrade', function (req, socket) {
     }
   }
   else{
-    res.statusCode = 401;
-    res.setHeader('WWW-Authenticate', 'Basic realm="Login"');
-    res.end('<html><body>You shall not pass</body></html>');
+    socket.statusCode = 401;
+    socket.setHeader('WWW-Authenticate', 'Basic realm="Login"');
+    socket.end('<html><body>You shall not pass</body></html>');
   }
 });
 
